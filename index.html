@@ -5,29 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nanu_SynchronousDemo
     </title>
-    <script>
-        async function loaduserDetails(username){
-            try{
-                const url=`https://api.github.com/users/${username}`;
-                const res=await fetch(url);
-                const data=await res.json();
-                document.getElementById("para1").src=data.avatar_url;
-                
-                document.getElementById("para1").style.color="red";
-                console.log("Response:",res.json());
-                
-                
-            }
-            catch(err){
-                console.log("Error",err);
-                
-            }
-        }
-        loaduserDetails("harshtiwari");
-    </script>
+    <script src="./promise.js"></script>
 </head>
 <body>
-    <h1>Github Page Info</h1>
-    <img id="para1" src=""></img>
+    
 </body>
 </html>
