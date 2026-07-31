@@ -23,6 +23,8 @@
             <tr>
                 <th>SR. NO.</th>
                 <th>TITLE</th>
+                <th>IMAGE</th>
+                <th>QRCODE</th>
                 <th>CATEGORY.</th>
                 <th>PRICE</th>
                 <th>RATING</th>
@@ -47,8 +49,10 @@
                 data.products.map((i,index)=>{
                     row+=`
                     <tr>
-                        <td>${index}</td>
+                        <td>${index+1}</td>
                         <td>${i.title}</td>
+                        <td><img height=200px width=200px src=${i.images[0]}></td>
+                        <td><img src=${i.meta.qrCode}></td>
                         <td>${i.category}</td>
                         <td>${i.price}₹</td>
                         <td>${i.rating}</td>
