@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Fetch</title>
+    
+    <style>
+        table{
+            border:5px solid black;
+            width:80%;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <caption>List of Products</caption>
+        <thead>
+            <th>S.No.</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Rating</th>
+            <th>Price </th>
+            <th>Stock</th>
+        </thead>
+        <tbody id="data">
+
+        </tbody>
+    </table>
+    <script>
+        const URL="https://dummyjson.com/products?limit=5&skip=2"
+        const ele=document.getElementById("data");
+            
+        async function load_product(){
+            try{
+                
+                let rows=""
+                const res=await fetch(URL);
+                const data=await res.json();
+                console.log("DATA",data.products);
+                data.products.map((i,index)=>(
+                    rows+=`
+                    <tr>
+                        <td>${index+1}</td>
+                        <td>${i.title}</td>
+                        <td>${i.category}</td>
+                        <td>${i.rating}</td>
+                        <td>${i.price}</td>
+                        <td>${i.stock}</td>
+                    </tr>
+                    `
+                    
+                ))
+                ele.innerHTML=rows
+                
+                
+                    
+            }
+            catch(err){
+                console.log("Error: ",err)
+            }
+        }
+        load_product()
+    </script>
+</body>
+</html>

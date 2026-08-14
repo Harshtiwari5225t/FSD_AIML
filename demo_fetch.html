@@ -36,8 +36,8 @@
         </tbody>
     </table>
     <script>
-        const ele =document.getElementById("data");
-        const URL="https://dummyjson.com/products?limit=100&skip=1";
+        const ele=document.getElementById("data");
+        const URL=`https://dummyjson.com/products?limit=190`;
         async function loadproduct() {
             
             try{
@@ -59,11 +59,12 @@
                         <td>${i.stock}</td>
                     </tr>
                     `;
-                    ele.innerHTML=row;
+                    ele.innerHTML=row; 
                 })
             }
             catch(err){
                 console.log("ERROR ",err );
+                ele.innerHTML=`<tr><td colspan=12 > Failed to load products. Please check your internet</td></tr>`;
             }
         }
         loadproduct();
