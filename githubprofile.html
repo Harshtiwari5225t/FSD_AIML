@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gh:// extractor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0D12;
+    --surface:#12161F;
+    --surface-2:#181D28;
+    --border:#232A38;
+    --text:#E6E9EF;
+    --muted:#8891A3;
+    --amber:#F2B84B;
+    --teal:#4FD1C5;
+    --danger:#F2755A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:48px 48px;
+    background-position:center top;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:40px 20px 80px;}
+
+  .titlebar{
+    display:flex;align-items:center;gap:8px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px 10px 0 0;
+    padding:10px 14px;
+  }
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--border);}
+  .dot:nth-child(1){background:#F2755A;}
+  .dot:nth-child(2){background:#F2B84B;}
+  .dot:nth-child(3){background:#4FD1C5;}
+  .titlebar span{
+    margin-left:8px;font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--muted);
+  }
+
+  .console{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 10px 10px;
+    padding:28px 24px;
+  }
+
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:26px;font-weight:700;margin:0 0 4px;
+    letter-spacing:-0.02em;
+  }
+  .prompt{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;color:var(--muted);margin:0 0 24px;
+  }
+  .prompt .amber{color:var(--amber);}
+
+  .search-row{display:flex;gap:10px;margin-bottom:8px;}
+  input[type=text]{
+    flex:1;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    padding:12px 14px;
+    border-radius:6px;
+    outline:none;
+  }
+  input[type=text]:focus{border-color:var(--teal);}
+  input[type=text]::placeholder{color:#4B5468;}
+  button{
+    background:var(--amber);
+    color:#1A1200;
+    border:none;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:0 22px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:filter .15s ease;
+  }
+  button:hover{filter:brightness(1.08);}
+  button:disabled{opacity:.5;cursor:default;}
+
+  .hint{font-family:'JetBrains Mono',monospace;font-size:11px;color:#4B5468;margin:0 0 28px;}
+
+  #status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;color:var(--muted);
+    min-height:18px;margin-bottom:8px;
+  }
+  #status.err{color:var(--danger);}
+
+  #results{display:none;animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .profile{
+    display:flex;gap:16px;align-items:center;
+    padding:18px;background:var(--surface-2);
+    border:1px solid var(--border);border-radius:8px;margin-bottom:18px;
+  }
+  .profile img{width:64px;height:64px;border-radius:8px;border:1px solid var(--border);}
+  .profile .name{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;}
+  .profile .login{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+  .profile .bio{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.4;}
+  .stats{display:flex;gap:18px;margin-top:8px;}
+  .stats div{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+  .stats b{color:var(--text);}
+
+  .section-label{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+    margin:22px 0 10px;display:flex;align-items:center;gap:8px;
+  }
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .contrib-frame{
+    background:#fff;border-radius:8px;padding:12px;
+    border:1px solid var(--border);overflow-x:auto;
+  }
+  .contrib-frame img{display:block;min-width:600px;width:100%;}
+  .contrib-fallback{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);
+    padding:14px;text-align:center;
+  }
+
+  .repo{
+    padding:14px;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:8px;margin-bottom:8px;
+  }
+  .repo-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  .repo-name{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);font-weight:600;}
+  .repo-star{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);white-space:nowrap;}
+  .repo-desc{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
+  .repo-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:#4B5468;margin-top:6px;}
+
+  .event{
+    display:flex;gap:10px;padding:9px 0;
+    border-bottom:1px solid var(--border);
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+  }
+  .event:last-child{border-bottom:none;}
+  .event .tag{color:var(--amber);min-width:64px;}
+  .event .repo-ref{color:var(--muted);}
+  .event .when{margin-left:auto;color:#4B5468;white-space:nowrap;}
+
+  .empty{font-family:'JetBrains Mono',monospace;font-size:12px;color:#4B5468;padding:10px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <span>github-extractor — no auth required</span>
+  </div>
+
+  <div class="console">
+    <h1>gh:// extractor</h1>
+    <p class="prompt"><span class="amber">$</span> reads only public data · unauthenticated · 60 req/hr limit</p>
+
+    <div class="search-row">
+      <input type="text" id="username" placeholder="octocat" autocomplete="off">
+      <button id="fetchBtn" onclick="run()">fetch</button>
+    </div>
+    <p class="hint">no token, no login — just hits GitHub's public REST endpoints and the public contribution-graph image</p>
+
+    <div id="status"></div>
+
+    <div id="results">
+      <div class="profile">
+        <img id="avatar" src="" alt="">
+        <div>
+          <div class="name" id="pName"></div>
+          <div class="login" id="pLogin"></div>
+          <div class="bio" id="pBio"></div>
+          <div class="stats">
+            <div><b id="pRepos"></b> repos</div>
+            <div><b id="pFollowers"></b> followers</div>
+            <div><b id="pFollowing"></b> following</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">contribution graph</div>
+      <div class="contrib-frame" id="contribFrame"></div>
+
+      <div class="section-label">top repos (by stars)</div>
+      <div id="repoList"></div>
+
+      <div class="section-label">recent public activity</div>
+      <div id="eventList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const REST_BASE = "https://api.github.com";
+
+function timeAgo(iso){
+  const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+  const units = [[31536000,'y'],[2592000,'mo'],[86400,'d'],[3600,'h'],[60,'m']];
+  for (const [secs, label] of units){
+    const v = Math.floor(s/secs);
+    if (v >= 1) return v + label + ' ago';
+  }
+  return 'just now';
+}
+
+function eventLine(e){
+  const map = {
+    PushEvent: ['push', e.payload.commits ? `${e.payload.commits.length} commit(s)` : ''],
+    PullRequestEvent: ['pr', e.payload.action],
+    IssuesEvent: ['issue', e.payload.action],
+    WatchEvent: ['star', ''],
+    CreateEvent: ['create', e.payload.ref_type],
+    ForkEvent: ['fork', '']
+  };
+  const [tag, detail] = map[e.type] || [e.type.replace('Event','').toLowerCase(), ''];
+  return { tag, detail, repo: e.repo.name, when: timeAgo(e.created_at) };
+}
+
+async function run(){
+  const username = document.getElementById('username').value.trim();
+  const status = document.getElementById('status');
+  const results = document.getElementById('results');
+  const btn = document.getElementById('fetchBtn');
+
+  status.className = '';
+  results.style.display = 'none';
+  if (!username){ status.textContent = 'enter a username first'; status.className='err'; return; }
+
+  btn.disabled = true;
+  status.textContent = `fetching ${username}...`;
+
+  try {
+    const profileRes = await fetch(`${REST_BASE}/users/${username}`);
+    if (profileRes.status === 404) throw new Error('no user found with that username');
+    if (profileRes.status === 403) throw new Error('rate limit hit (60/hr with no token) — wait a bit and retry');
+    if (!profileRes.ok) throw new Error(`GitHub API error: ${profileRes.status}`);
+    const profile = await profileRes.json();
+
+    const [reposRes, eventsRes] = await Promise.all([
+      fetch(`${REST_BASE}/users/${username}/repos?per_page=100&sort=updated`),
+      fetch(`${REST_BASE}/users/${username}/events/public?per_page=20`)
+    ]);
+    const repos = reposRes.ok ? await reposRes.json() : [];
+    const events = eventsRes.ok ? await eventsRes.json() : [];
+
+    // profile card
+    document.getElementById('avatar').src = profile.avatar_url;
+    document.getElementById('pName').textContent = profile.name || profile.login;
+    document.getElementById('pLogin').textContent = '@' + profile.login;
+    document.getElementById('pBio').textContent = profile.bio || '';
+    document.getElementById('pRepos').textContent = profile.public_repos;
+    document.getElementById('pFollowers').textContent = profile.followers;
+    document.getElementById('pFollowing').textContent = profile.following;
+
+    // contribution graph — public image endpoint, no auth needed
+    document.getElementById('contribFrame').innerHTML =
+      `<img src="https://github.com/users/${username}/contributions"
+            alt="contribution graph"
+            onerror="this.parentElement.innerHTML='<div class=contrib-fallback>graph unavailable right now — this endpoint is unofficial and can be flaky</div>'">`;
+
+    // top repos by stars
+    const top = [...repos]
+      .filter(r => !r.fork)
+      .sort((a,b) => b.stargazers_count - a.stargazers_count)
+      .slice(0, 8);
+    const repoList = document.getElementById('repoList');
+    repoList.innerHTML = top.length ? top.map(r => `
+      <div class="repo">
+        <div class="repo-top">
+          <span class="repo-name">${r.name}</span>
+          <span class="repo-star">★ ${r.stargazers_count}</span>
+        </div>
+        <div class="repo-desc">${r.description ? r.description.replace(/</g,'&lt;') : 'no description'}</div>
+        <div class="repo-lang">${r.language || '—'}</div>
+      </div>`).join('') : '<div class="empty">no public repos found</div>';
+
+    // recent activity
+    const eventList = document.getElementById('eventList');
+    eventList.innerHTML = events.length ? events.slice(0, 12).map(e => {
+      const {tag, detail, repo, when} = eventLine(e);
+      return `<div class="event">
+        <span class="tag">${tag}</span>
+        <span class="repo-ref">${repo}${detail ? ' · ' + detail : ''}</span>
+        <span class="when">${when}</span>
+      </div>`;
+    }).join('') : '<div class="empty">no recent public activity (last ~90 days)</div>';
+
+    status.textContent = '';
+    results.style.display = 'block';
+  } catch (err) {
+    status.textContent = err.message;
+    status.className = 'err';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('username').addEventListener('keydown', e => {
+  if (e.key === 'Enter') run();
+});
+</script>
+</body>
+</html>
