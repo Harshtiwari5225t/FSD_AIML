@@ -1,9 +1,23 @@
 import React from 'react'
+import Item from "./Item"
 
 const Home = () => {
+  const itemData=[
+    {image:"",title:"ReactJS",price:465},
+    {image:"",title:"ReactJS",price:465},
+    {image:"",title:"ReactJS",price:465},
+    {image:"",title:"ReactJS",price:465},
+    {image:"",title:"ReactJS",price:465},
+    {image:"",title:"ReactJS",price:465},
+    {image:"",title:"ReactJS",price:465}
+];
   return (
-    <div classname="home">
-      <h1>Home Page</h1>
+    <div className="home">
+      {
+        itemData.map((item,index)=>{
+        return <Item key={index} props={item}/>
+      })
+      }
     </div>
   )
 }
