@@ -1,23 +1,12 @@
 import React from 'react'
 import Item from "./Item"
-
+import {Outlet} from "react-router-dom"
 const Home = () => {
-  const itemData=[
-    {image:"",title:"ReactJS",price:465},
-    {image:"",title:"ReactJS",price:465},
-    {image:"",title:"ReactJS",price:465},
-    {image:"",title:"ReactJS",price:465},
-    {image:"",title:"ReactJS",price:465},
-    {image:"",title:"ReactJS",price:465},
-    {image:"",title:"ReactJS",price:465}
-];
+  
+
   return (
     <div className="home">
-      {
-        itemData.map((item,index)=>{
-        return <Item key={index} props={item}/>
-      })
-      }
+      <Outlet/>
     </div>
   )
 }
