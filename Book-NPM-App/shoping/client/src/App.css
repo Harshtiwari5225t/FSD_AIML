@@ -1,5 +1,5 @@
 .header{
-    width: 100vx;
+    width: 100vw;
     height: 10vh;
     background-color: black;
     color:white;
@@ -26,12 +26,14 @@
     align-items: center;
     font-size: 30px;
 }
-.Home{
+.home{
     width: 100vw;
-    height: 80vh;
+    height: 77vh;
     display: flex;
+    flex-wrap: wrap;
     margin:10px;
     justify-content: center;
     align-items: center;
+    overflow: scroll;
     
 }
