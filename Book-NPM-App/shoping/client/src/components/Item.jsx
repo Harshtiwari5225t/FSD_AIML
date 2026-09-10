@@ -1,6 +1,6 @@
 import image from "../assets/react.svg"
 import "./Item.css"
-const Item = (props) => {
+const Item = ({props}) => {
   return (
     <div className="card">
       <img src={props.images[0]} width={100} height={100} alt="Item image"/>
