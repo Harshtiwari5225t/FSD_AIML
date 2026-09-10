@@ -26,6 +26,12 @@
     align-items: center;
     font-size: 30px;
 }
+
+.navbar a{
+    text-decoration: none;
+    color:white;
+}
+
 .home{
     width: 100vw;
     height: 75vh;
